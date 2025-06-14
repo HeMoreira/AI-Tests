@@ -1,0 +1,15 @@
+{% extends "loja/base.html" %}
+{% block title %}{{ produto.nome }}{% endblock %}
+{% block content %}
+    <h2>{{ produto.nome }}</h2>
+    <p><strong>Código:</strong> {{ produto.codigo }}</p>
+    <p><strong>Descrição:</strong> {{ produto.descricao }}</p>
+    <p><strong>Preço:</strong> R$ {{ produto.preco }}</p>
+    <p><strong>Estoque:</strong> {{ produto.quantidade }}</p>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'adicionar_carrinho' produto.codigo %}">Adicionar ao Carrinho</a>
+    {% else %}
+        <p>Entre na sua conta para comprar este produto.</p>
+    {% endif %}
+{% endblock %}

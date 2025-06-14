@@ -1,0 +1,24 @@
+{% extends "loja/base.html" %}
+{% block title %}Produtos{% endblock %}
+{% block content %}
+    <h2>Todos os Produtos</h2>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Buscar...">
+        <input type="number" name="min" placeholder="Preço mín">
+        <input type="number" name="max" placeholder="Preço máx">
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <div class="produtos">
+        {% for produto in produtos %}
+            <div class="produto">
+                <h3><a href="{% url 'detalhe_produto' produto.codigo %}">{{ produto.nome }}</a></h3>
+                <p>R$ {{ produto.preco }}</p>
+                <p>{{ produto.descricao_curta }}</p>
+            </div>
+        {% empty %}
+            <p>Nenhum produto encontrado.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

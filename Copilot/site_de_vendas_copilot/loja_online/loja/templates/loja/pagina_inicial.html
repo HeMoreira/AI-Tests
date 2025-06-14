@@ -1,0 +1,18 @@
+{% extends "loja/base.html" %}
+{% block title %}Início{% endblock %}
+{% block content %}
+    <h2>Bem-vindo à Loja Online!</h2>
+    <p>Confira nossos produtos em destaque:</p>
+
+    <div class="produtos-destaque">
+        {% for produto in destaques %}
+            <div class="produto">
+                <h3><a href="{% url 'detalhe_produto' produto.codigo %}">{{ produto.nome }}</a></h3>
+                <p>R$ {{ produto.preco }}</p>
+                <p>{{ produto.descricao_curta }}</p>
+            </div>
+        {% empty %}
+            <p>Nenhum produto em destaque no momento.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

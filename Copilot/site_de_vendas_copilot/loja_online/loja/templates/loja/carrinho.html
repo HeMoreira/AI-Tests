@@ -1,0 +1,20 @@
+{% extends "loja/base.html" %}
+{% block title %}Seu Carrinho{% endblock %}
+{% block content %}
+    <h2>Meu Carrinho</h2>
+
+    {% if carrinho.itens.exists %}
+        <ul>
+            {% for item in carrinho.itens.all %}
+                <li>
+                    {{ item.produto.nome }} ({{ item.quantidade }}x)
+                    - R$ {{ item.subtotal }}
+                    <a href="{% url 'remover_carrinho' item.produto.codigo %}">Remover</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <p><strong>Total:</strong> R$ {{ carrinho.total }}</p>
+    {% else %}
+        <p>Seu carrinho está vazio.</p>
+    {% endif %}
+{% endblock %}

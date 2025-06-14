@@ -1,0 +1,1 @@
+Para caso você queira ver os sites desenvolvidos pelas IAs e avalia-las por conta própria

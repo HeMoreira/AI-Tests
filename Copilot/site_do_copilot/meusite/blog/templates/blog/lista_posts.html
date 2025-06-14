@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Posts</title>
+</head>
+<body>
+    <h1>Posts do Blog</h1>
+    {% for post in posts %}
+        <h2>{{ post.titulo }}</h2>
+        <p>{{ post.conteudo }}</p>
+        <small>Publicado em: {{ post.data_publicacao }}</small>
+        <hr>
+    {% endfor %}
+</body>
+</html>
