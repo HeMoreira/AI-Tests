@@ -1,0 +1,94 @@
+/* static/css/style.css */
+
+/* Cores */
+:root {
+    --primary-color: #87CEEB; /* Azul Céu */
+    --primary-dark: #4682B4; /* Azul de Aço */
+    --accent-color: #FFA07A; /* Salmão Claro */
+    --text-dark: #333333;
+    --text-light: #F8F8F8;
+    --bg-light: #FFFFFF;
+    --bg-light-alt: #F5F5F5;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif; /* Ou outra fonte escolhida */
+    color: var(--text-dark);
+    background-color: var(--bg-light-alt);
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-dark);
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-dark); /* Ou branco se a cor for escura */
+}
+.btn-accent:hover {
+    background-color: #FF8C69; /* Um tom mais escuro do salmão */
+    border-color: #FF8C69;
+}
+
+/* Card de produto */
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    background-color: var(--bg-light);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+    max-height: 200px; /* Altura máxima para imagens na listagem */
+    object-fit: contain; /* Garante que a imagem se ajuste sem cortar */
+    width: 100%;
+}
+
+.product-card .card-body {
+    padding: 15px;
+}
+
+.product-card .card-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.product-card .product-price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+/* Estilo para formulários */
+.form-control {
+    border-radius: 0.5rem;
+}
+
+/* Estilo para mensagens Django */
+.messages .alert {
+    border-radius: 0.5rem;
+    margin-top: 15px;
+}
+.alert-success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+.alert-info { background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; }
+.alert-warning { background-color: #fff3cd; border-color: #ffeeba; color: #856404; }
+.alert-danger { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+
+/* Adicione mais estilos conforme necessário */

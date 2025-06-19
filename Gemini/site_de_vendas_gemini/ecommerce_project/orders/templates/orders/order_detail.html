@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalhes do Pedido #{{ order.order_number }}{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Detalhes do Pedido #{{ order.order_number }}</h1>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'customer_dashboard' %}">Meu Painel</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_list' %}">Meus Pedidos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Pedido #{{ order.order_number }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Informações do Pedido</h5>
+                    <p><strong>Status:</strong> <span class="badge {% if order.status == 'Pendente' %}bg-warning text-dark{% elif order.status == 'Enviado' %}bg-info{% elif order.status == 'Entregue' %}bg-success{% elif order.status == 'Cancelado' %}bg-danger{% else %}bg-secondary{% endif %}">{{ order.status }}</span></p>
+                    <p><strong>Valor Total:</strong> R$ {{ order.total_amount|floatformat:2 }}</p>
+                    <p><strong>Data do Pedido:</strong> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Última Atualização:</strong> {{ order.updated_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Método de Pagamento:</strong> {{ order.payment_method }}</p>
+                    <p><strong>Status do Pagamento:</strong> <span class="badge {% if order.payment_status == 'Pago' %}bg-success{% else %}bg-secondary{% endif %}">{{ order.payment_status }}</span></p>
+
+                    <h6 class="mt-4">Endereço de Entrega:</h6>
+                    <p>{{ order.shipping_address|linebreaksbr }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Itens do Pedido</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for item in order_items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">{{ item.product_name }} ({{ item.quantity }}x)</h6>
+                                    <small class="text-muted">Preço na Compra: R$ {{ item.price_at_purchase|floatformat:2 }}</small>
+                                </div>
+                                <span>R$ {{ item.total_item_price|floatformat:2 }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Ajuda com seu Pedido?</h5>
+                    <p>Se você tiver alguma dúvida sobre este pedido, entre em contato com nosso suporte.</p>
+                    <a href="#" class="btn btn-outline-info w-100">Falar com Suporte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

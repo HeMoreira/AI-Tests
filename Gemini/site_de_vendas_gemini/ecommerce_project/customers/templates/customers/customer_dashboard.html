@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Meu Painel{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Olá, {{ user.first_name|default:user.username }}!</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Minhas Informações</h5>
+                    <p><strong>Nome:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Usuário:</strong> {{ user.username }}</p>
+                    <p><strong>E-mail:</strong> {{ user.email }}</p>
+                    {% if user.profile %}
+                        <p><strong>Gênero:</strong> {{ user.profile.get_gender_display|default:"Não informado" }}</p>
+                        <p><strong>Data Nasc.:</strong> {{ user.profile.birth_date|date:"d/m/Y"|default:"Não informado" }}</p>
+                        <p><strong>Telefone:</strong> {{ user.profile.phone_number|default:"Não informado" }}</p>
+                        <p><strong>Endereço:</strong> {{ user.profile.address|default:"Não informado" }}</p>
+                        <p>{{ user.profile.city|default:"" }} - {{ user.profile.state|default:"" }} {% if user.profile.zip_code %}({{ user.profile.zip_code }}){% endif %}</p>
+                    {% endif %}
+                    <a href="{% url 'customer_profile_edit' %}" class="btn btn-sm btn-primary">Editar Perfil</a>
+                    <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger ms-2">Sair</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Meus Pedidos</h5>
+                    {% comment %}
+                    {% if user_orders %}
+                        <ul class="list-group">
+                            {% for order in user_orders %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Pedido #{{ order.order_number }} - R$ {{ order.total_amount|floatformat:2 }}
+                                    <span class="badge bg-info text-dark">{{ order.status }}</span>
+                                    <a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">Ver Detalhes</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Você ainda não fez nenhum pedido.</p>
+                    {% endif %}
+                    {% endcomment %}
+                    <p class="text-muted">Os detalhes dos seus pedidos aparecerão aqui.</p>
+                    <a href="#" class="btn btn-sm btn-secondary disabled">Ver Histórico de Pedidos (Em Breve)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

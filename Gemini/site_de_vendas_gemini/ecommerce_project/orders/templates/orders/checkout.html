@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Finalizar Pedido{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Finalizar Pedido</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Informações de Entrega e Pagamento</h5>
+                    <form method="post" id="checkout-form">
+                        {% csrf_token %}
+
+                        <h4>Endereço de Entrega</h4>
+                        <div class="mb-3">
+                            {{ form.shipping_address.label_tag }}
+                            {{ form.shipping_address }}
+                            {% for error in form.shipping_address.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">{{ form.zip_code.label_tag }}{{ form.zip_code }}{% for error in form.zip_code.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}</div>
+                            <div class="col-md-4 mb-3">{{ form.city.label_tag }}{{ form.city }}{% for error in form.city.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}</div>
+                            <div class="col-md-4 mb-3">{{ form.state.label_tag }}{{ form.state }}{% for error in form.state.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}</div>
+                            <div class="col-md-4 mb-3">{{ form.country.label_tag }}{{ form.country }}{% for error in form.country.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}</div>
+                        </div>
+
+                        <h4 class="mt-4">Método de Pagamento</h4>
+                        <div class="mb-3">
+                            {{ form.payment_method.label_tag }}
+                            {{ form.payment_method }}
+                            {% for error in form.payment_method.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div id="credit-card-fields" style="{% if form.payment_method.value != 'Credit Card' %}display: none;{% endif %}">
+                            <div class="mb-3">
+                                {{ form.card_number.label_tag }}
+                                {{ form.card_number }}
+                                {% for error in form.card_number.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                {{ form.card_holder_name.label_tag }}
+                                {{ form.card_holder_name }}
+                                {% for error in form.card_holder_name.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form.expiration_date.label_tag }}
+                                    {{ form.expiration_date }}
+                                    {% for error in form.expiration_date.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form.cvv.label_tag }}
+                                    {{ form.cvv }}
+                                    {% for error in form.cvv.errors %}<div class="alert alert-danger mt-1">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-accent btn-lg w-100 mt-4">Confirmar Pedido</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Seu Carrinho</h5>
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for item in cart_items %}
+                            <li class="list-group-item d-flex justify-content-between">
+                                <div>
+                                    {{ item.product.name }} ({{ item.quantity }}x)
+                                </div>
+                                <span>R$ {{ item.total_price|floatformat:2 }}</span>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between fw-bold fs-5">
+                            Total:
+                            <span>R$ {{ cart.total_price|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                    <a href="{% url 'cart_detail' %}" class="btn btn-outline-secondary w-100">Voltar ao Carrinho</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentMethodSelect = document.getElementById('id_payment_method');
+        const creditCardFields = document.getElementById('credit-card-fields');
+
+        function toggleCreditCardFields() {
+            if (paymentMethodSelect.value === 'Credit Card') {
+                creditCardFields.style.display = 'block';
+            } else {
+                creditCardFields.style.display = 'none';
+            }
+        }
+
+        paymentMethodSelect.addEventListener('change', toggleCreditCardFields);
+        // Garante que o estado correto é definido ao carregar a página
+        toggleCreditCardFields();
+    });
+</script>
+{% endblock %}

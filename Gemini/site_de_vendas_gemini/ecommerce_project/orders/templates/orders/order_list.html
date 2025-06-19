@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Meus Pedidos{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Meus Pedidos</h1>
+
+    {% if orders %}
+        <div class="list-group">
+            {% for order in orders %}
+                <a href="{% url 'order_detail' order.order_number %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center mb-2 shadow-sm rounded">
+                    <div>
+                        <h5 class="mb-1">Pedido #{{ order.order_number }}</h5>
+                        <p class="mb-1 text-muted">Data: {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                        <small>Total: R$ {{ order.total_amount|floatformat:2 }}</small>
+                    </div>
+                    <div>
+                        <span class="badge {% if order.status == 'Pendente' %}bg-warning text-dark{% elif order.status == 'Enviado' %}bg-info{% elif order.status == 'Entregue' %}bg-success{% elif order.status == 'Cancelado' %}bg-danger{% else %}bg-secondary{% endif %} me-2">
+                            {{ order.status }}
+                        </span>
+                        <span class="badge {% if order.payment_status == 'Pago' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ order.payment_status }}
+                        </span>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            Você ainda não fez nenhum pedido.
+            <a href="{% url 'product_list' %}" class="alert-link">Comece a comprar agora!</a>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pedido Confirmado!{% endblock %}
+
+{% block content %}
+    <div class="text-center my-5">
+        <i class="fa-solid fa-circle-check text-success display-1 mb-3"></i>
+        <h1 class="mb-3">Pedido Confirmado com Sucesso!</h1>
+        <p class="lead">Obrigado por sua compra! Seu pedido foi processado e está a caminho.</p>
+        <p class="fs-4">Número do Pedido: <strong>#{{ order.order_number }}</strong></p>
+        <p>Valor Total: <strong>R$ {{ order.total_amount|floatformat:2 }}</strong></p>
+
+        <a href="{% url 'order_detail' order.order_number %}" class="btn btn-primary btn-lg mt-3 me-2">Ver Detalhes do Pedido</a>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary btn-lg mt-3">Continuar Comprando</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Resumo do Pedido</h5>
+                    <ul class="list-group list-group-flush mb-3">
+                        {% for item in order_items %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-0">{{ item.product_name }} ({{ item.quantity }}x)</h6>
+                                    <small class="text-muted">Preço na Compra: R$ {{ item.price_at_purchase|floatformat:2 }}</small>
+                                </div>
+                                <span>R$ {{ item.total_item_price|floatformat:2 }}</span>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between fw-bold fs-5">
+                            Total do Pedido:
+                            <span>R$ {{ order.total_amount|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                    <hr>
+                    <h6>Endereço de Entrega:</h6>
+                    <p class="mb-0">{{ order.shipping_address|linebreaksbr }}</p>
+                    <h6 class="mt-3">Método de Pagamento:</h6>
+                    <p>{{ order.payment_method }}</p>
+                    <h6 class="mt-3">Status do Pagamento:</h6>
+                    <p><span class="badge bg-info">{{ order.payment_status }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

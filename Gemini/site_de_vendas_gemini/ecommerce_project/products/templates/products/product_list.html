@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Produtos - {% if current_category %}{{ current_category.name }}{% else %}Todos{% endif %}{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">
+        {% if current_category %}
+            {{ current_category.name }}
+            <small class="text-muted fs-5 d-block">{{ current_category.description }}</small>
+        {% else %}
+            Todos os Produtos
+        {% endif %}
+    </h1>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    Filtros
+                </div>
+                <div class="card-body">
+                    <form method="get" action="{% url 'product_list' %}">
+                        {% if current_category %}
+                            <input type="hidden" name="category" value="{{ current_category.slug }}">
+                        {% endif %}
+                        {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+
+                        <div class="mb-3">
+                            <label for="sort_by" class="form-label">Ordenar por:</label>
+                            <select class="form-select" id="sort_by" name="sort" onchange="this.form.submit()">
+                                <option value="priority" {% if sort_by == 'priority' %}selected{% endif %}>Mais Relevantes</option>
+                                <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Preço: Menor para Maior</option>
+                                <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Preço: Maior para Menor</option>
+                                <option value="name_asc" {% if sort_by == 'name_asc' %}selected{% endif %}>Nome: A-Z</option>
+                                <option value="name_desc" {% if sort_by == 'name_desc' %}selected{% endif %}>Nome: Z-A</option>
+                                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Mais Recentes</option>
+                                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Mais Antigos</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Faixa de Preço</label>
+                            <div class="d-flex align-items-center">
+                                <input type="number" name="min_price" class="form-control form-control-sm" placeholder="Mín." value="{{ min_price|default_if_none:'' }}">
+                                <span class="mx-2">-</span>
+                                <input type="number" name="max_price" class="form-control form-control-sm" placeholder="Máx." value="{{ max_price|default_if_none:'' }}">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Aplicar Filtros</button>
+                        <a href="{% url 'product_list' %}{% if current_category %}?category={{ current_category.slug }}{% endif %}" class="btn btn-outline-secondary w-100 mt-2">Limpar Filtros</a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    Navegar por Categorias
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for cat in categories %} {# 'categories' vem do context processor #}
+                        <li class="list-group-item">
+                            <a href="{% url 'product_list' %}?category={{ cat.slug }}" class="text-decoration-none">
+                                {{ cat.name }}
+                            </a>
+                            {% if cat.children.all %}
+                                <ul class="list-unstyled ms-3 mt-1">
+                                    {% for sub_cat in cat.children.all %}
+                                        <li>
+                                            <a href="{% url 'product_list' %}?category={{ sub_cat.slug }}" class="text-decoration-none text-muted">
+                                                - {{ sub_cat.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            {% if products %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for product in products %}
+                        <div class="col">
+                            <div class="card h-100 product-card">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder_product.png' %}" class="card-img-top" alt="Sem Imagem">
+                                {% endif %}
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">{{ product.name }}</h5>
+                                    <p class="card-text text-muted">{{ product.short_description }}</p>
+                                    <div class="mt-auto">
+                                        <p class="product-price">R$ {{ product.price|floatformat:2 }}</p>
+                                        <a href="{% url 'product_detail' product.slug %}" class="btn btn-sm btn-primary">Detalhes</a>
+                                        <form action="{% url 'add_to_cart' product.sku %}" method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-sm btn-accent {% if not product.is_in_stock %}disabled{% endif %}"
+                                                    {% if not product.is_in_stock %}aria-disabled="true"{% endif %}>
+                                                {% if product.is_in_stock %}Adicionar ao Carrinho{% else %}Esgotado{% endif %}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <nav aria-label="Paginação de Produtos" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">Anterior</a></li>
+                        {% endif %}
+
+                        {% for i in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                                <a class="page-link" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">{{ i }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}">Próximo</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% else %}
+                <div class="alert alert-warning text-center" role="alert">
+                    Nenhum produto encontrado com os filtros aplicados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
