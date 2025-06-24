@@ -1,0 +1,36 @@
+{% extends 'loja/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Entrar - LojaOnline{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h3><i class="fas fa-sign-in-alt"></i> Entrar</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                            <i class="fas fa-sign-in-alt"></i> Entrar
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <p>Não tem uma conta?</p>
+                        <a href="{% url 'registro' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus"></i> Criar Conta
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<!-- Header da Categoria -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'blog:home' %}" class="text-white-50">Início</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'blog:lista_posts' %}" class="text-white-50">Posts</a>
+                        </li>
+                        <li class="breadcrumb-item active text-white">{{ categoria.nome }}</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-folder-open"></i> {{ categoria.nome }}
+                </h1>
+                
+                {% if categoria.descricao %}
+                    <p class="lead mb-4">{{ categoria.descricao }}</p>
+                {% endif %}
+                
+                <div class="d-flex align-items-center">
+                    <span class="badge badge-light fs-6 me-3">
+                        <i class="fas fa-file-alt"></i>
+                        {{ page_obj.paginator.count }} post{{ page_obj.paginator.count|pluralize }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fas fa-tags" style="font-size: 6rem; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Posts da Categoria -->
+<section class="py-5">
+    <div class="container">
+        {% if page_obj %}
+            <!-- Filtros e Ordenação -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h2 class="h4 mb-0">Posts em {{ categoria.nome }}</h2>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} 
+                        de {{ page_obj.paginator.count }} posts
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Grid de Posts -->
+            <div class="row">
+                {% for post in page_obj %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <article class="card h-100">
+                            <!-- Imagem do Post -->
+                            {% if post.imagem %}
+                                <img src="{{ post.imagem.url }}" class="card-img-top" alt="{{ post.titulo }}">
+                            {% else %}
+                                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" 
+                                     style="height: 200px; background: linear-gradient(135deg, #3498db, #2c3e50);">
+                                    <i class="fas fa-file-alt text-white" style="font-size: 3rem; opacity: 0.7;"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body d-flex flex-column">
+                                <!-- Meta informações -->
+                                <div class="mb-2">
+                                    <span class="badge badge-primary">{{ categoria.nome }}</span>
+                                    <small class="text-muted ms-2">
+                                        <i class="fas fa-eye"></i> {{ post.visualizacoes }}
+                                        <span class="ms-2">
+                                            <i class="fas fa-comments"></i> {{ post.comentarios.count }}
+                                        </span>
+                                    </small>
+                                </div>
+                                
+                                <!-- Título -->
+                                <h5 class="card-title">
+                                    <a href="{% url 'blog:detalhe_post' post.slug %}" 
+                                       class="text-decoration-none text-dark">
+                                        {{ post.titulo }}
+                                    </a>
+                                </h5>
+                                
+                                <!-- Resumo -->
+                                <p class="card-text flex-grow-1">
+                                    {{ post.resumo|default:post.conteudo|truncatewords:20 }}
+                                </p>
+                                
+                                <!-- Meta dados do autor -->
+                                <div class="meta-info mb-3">
+                                    <small>
+                                        <i class="fas fa-user"></i> 
+                                        {{ post.autor.first_name|default:post.autor.username }}
+                                        <span class="ms-3">
+                                            <i class="fas fa-calendar"></i> 
+                                            {{ post.publicado_em|date:"d/m/Y" }}
+                                        </span>
+                                    </small>
+                                </div>
+                                
+                                <!-- Ações -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'blog:detalhe_post' post.slug %}" 
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-book-reader"></i> Ler Post
+                                    </a>
+                                    
+                                    <div class="d-flex align-items-center">
+                                        <button class="like-btn me-3" data-post-id="{{ post.id }}" 
+                                                onclick="curtirPost('{{ post.id }}')">
+                                            <i class="fas fa-heart"></i>
+                                            <span class="like-count">{{ post.visualizacoes }}</span>
+                                        </button>
+                                        
+                                        <button class="btn btn-outline-primary" onclick="compartilharPost('{{ post.titulo|escapejs }}', '{% url 'blog:detalhe_post' post.slug %}')">
+                                                title="Compartilhar">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Paginação -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Navegação de posts da categoria" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+        {% else %}
+            <!-- Nenhum post encontrado -->
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open text-muted" style="font-size: 4rem;"></i>
+                <h3 class="mt-3 text-muted">Nenhum post nesta categoria</h3>
+                <p class="text-muted">
+                    Ainda não há posts publicados na categoria "{{ categoria.nome }}".
+                </p>
+                <div class="mt-4">
+                    <a href="{% url 'blog:lista_posts' %}" class="btn btn-primary me-3">
+                        <i class="fas fa-list"></i> Ver Todos os Posts
+                    </a>
+                    <a href="{% url 'blog:home' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-home"></i> Voltar ao Início
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Outras Categorias -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center mb-4">
+                    <i class="fas fa-layer-group text-primary"></i> Outras Categorias
+                </h3>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center">
+            {% for cat in categorias %}
+                {% if cat.id != categoria.id %}
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <a href="{% url 'blog:posts_por_categoria' cat.id %}" 
+                           class="text-decoration-none">
+                            <div class="card text-center h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <i class="fas fa-folder text-primary mb-3" style="font-size: 2rem;"></i>
+                                    <h6 class="card-title text-dark">{{ cat.nome }}</h6>
+                                    {% if cat.descricao %}
+                                        <p class="card-text text-muted small">
+                                            {{ cat.descricao|truncatewords:8 }}
+                                        </p>
+                                    {% endif %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-file-alt"></i>
+                                        {% with posts_count=cat.post_set.count %}
+                                            {{ posts_count }} post{{ posts_count|pluralize }}
+                                        {% endwith %}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'blog:lista_posts' %}" class="btn btn-primary">
+                <i class="fas fa-th-large"></i> Ver Todas as Categorias
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Função para compartilhar posts
+    function compartilharPost(titulo, url) {
+        const fullUrl = window.location.origin + url;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: titulo,
+                url: fullUrl
+            }).catch(console.error);
+        } else {
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                mostrarToast('Link copiado para a área de transferência!', 'success');
+            }).catch(() => {
+                prompt('Copie o link:', fullUrl);
+            });
+        }
+    }
+
+    // Função para mostrar toast
+    function mostrarToast(mensagem, tipo = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${tipo} border-0 position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-${tipo === 'success' ? 'check-circle' : 'info-circle'} me-2"></i>
+                    ${mensagem}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }
+
+    // Configurar CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+    if (csrftoken && !document.querySelector('[name=csrfmiddlewaretoken]')) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrftoken;
+        document.body.appendChild(csrfInput);
+    }
+</script>
+{% endblock %}

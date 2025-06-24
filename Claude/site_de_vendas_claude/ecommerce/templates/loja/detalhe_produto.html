@@ -1,0 +1,118 @@
+{% extends 'loja/base.html' %}
+
+{% block title %}{{ produto.nome }} - LojaOnline{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Início</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'lista_produtos' %}">Produtos</a></li>
+            <li class="breadcrumb-item active">{{ produto.nome }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            {% if produto.imagem %}
+                <img src="{{ produto.imagem.url }}" class="img-fluid rounded shadow" alt="{{ produto.nome }}">
+            {% else %}
+                <div class="bg-light rounded shadow d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="fas fa-image fa-5x text-muted"></i>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-6">
+            <h1>{{ produto.nome }}</h1>
+            <p class="text-muted">Código: {{ produto.codigo }}</p>
+            
+            <div class="mb-3">
+                {% for categoria in produto.categorias.all %}
+                    <span class="badge bg-primary me-1">{{ categoria.nome }}</span>
+                {% endfor %}
+            </div>
+
+            <h3 class="price-tag mb-4">{{ produto.get_preco_formatado }}</h3>
+
+            <p class="lead">{{ produto.descricao_curta }}</p>
+
+            <div class="mb-4">
+                {% if produto.tem_estoque %}
+                    <span class="badge bg-success">
+                        <i class="fas fa-check"></i> Em estoque ({{ produto.quantidade }} unidades)
+                    </span>
+                {% else %}
+                    <span class="badge bg-danger">
+                        <i class="fas fa-times"></i> Fora de estoque
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if user.is_authenticated %}
+                {% if produto.tem_estoque %}
+                    <form method="POST" action="{% url 'adicionar_carrinho' produto.codigo %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-cart-plus"></i> Adicionar ao Carrinho
+                        </button>
+                    </form>
+                {% else %}
+                    <button class="btn btn-secondary btn-lg" disabled>
+                        <i class="fas fa-times"></i> Indisponível
+                    </button>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Faça login para comprar
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Descrição completa -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-info-circle"></i> Descrição do Produto</h4>
+                </div>
+                <div class="card-body">
+                    <p>{{ produto.descricao|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Produtos relacionados -->
+    {% if produtos_relacionados %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4><i class="fas fa-tags"></i> Produtos Relacionados</h4>
+            <div class="row">
+                {% for produto_rel in produtos_relacionados %}
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card product-card h-100">
+                        {% if produto_rel.imagem %}
+                            <img src="{{ produto_rel.imagem.url }}" class="card-img-top" alt="{{ produto_rel.nome }}" style="height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                                <i class="fas fa-image fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ produto_rel.nome }}</h6>
+                            <div class="price-tag">{{ produto_rel.get_preco_formatado }}</div>
+                            <a href="{% url 'detalhe_produto' produto_rel.codigo %}" class="btn btn-outline-primary btn-sm mt-2">
+                                Ver Produto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

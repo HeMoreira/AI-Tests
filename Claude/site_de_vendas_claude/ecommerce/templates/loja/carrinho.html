@@ -1,0 +1,97 @@
+{% extends 'loja/base.html' %}
+
+{% block title %}Carrinho - LojaOnline{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2><i class="fas fa-shopping-cart"></i> Meu Carrinho</h2>
+
+    {% if itens %}
+        <div class="row">
+            <div class="col-md-8">
+                {% for item in itens %}
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-3">
+                            {% if item.produto.imagem %}
+                                <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ item.produto.nome }}">
+                            {% else %}
+                                <div class="bg-light rounded-start h-100 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-image fa-2x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h5 class="card-title">{{ item.produto.nome }}</h5>
+                                        <p class="card-text text-muted">{{ item.produto.descricao_curta }}</p>
+                                        <p class="card-text">
+                                            <strong>Preço unitário:</strong> {{ item.produto.get_preco_formatado }}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <form method="POST" action="{% url 'atualizar_quantidade' item.produto.codigo %}" class="mb-2">
+                                            {% csrf_token %}
+                                            <div class="input-group" style="max-width: 150px;">
+                                                <input type="number" name="quantidade" value="{{ item.quantidade }}" min="1" max="{{ item.produto.quantidade }}" class="form-control">
+                                                <button class="btn btn-outline-primary" type="submit">
+                                                    <i class="fas fa-sync"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <p class="h5 text-success">{{ item.get_subtotal_formatado }}</p>
+                                        <form method="POST" action="{% url 'remover_carrinho' item.produto.codigo %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Tem certeza que deseja remover este item?')">
+                                                <i class="fas fa-trash"></i> Remover
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Resumo do pedido -->
+            <div class="col-md-4">
+                <div class="card sticky-top">
+                    <div class="card-header">
+                        <h5><i class="fas fa-calculator"></i> Resumo do Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total de itens:</span>
+                            <span>{{ total_itens_carrinho }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Total:</strong>
+                            <strong class="text-success h4">{{ total_formatado }}</strong>
+                        </div>
+                        <button class="btn btn-success w-100 btn-lg" onclick="alert('Funcionalidade de checkout será implementada em breve!')">
+                            <i class="fas fa-credit-card"></i> Finalizar Compra
+                        </button>
+                        <a href="{% url 'lista_produtos' %}" class="btn btn-outline-primary w-100 mt-2">
+                            <i class="fas fa-arrow-left"></i> Continuar Comprando
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-5x text-muted mb-4"></i>
+            <h3>Seu carrinho está vazio</h3>
+            <p class="text-muted">Adicione alguns produtos incríveis ao seu carrinho!</p>
+            <a href="{% url 'lista_produtos' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-shopping-bag"></i> Ver Produtos
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
