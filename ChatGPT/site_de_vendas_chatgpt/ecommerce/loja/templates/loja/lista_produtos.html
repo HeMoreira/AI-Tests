@@ -1,0 +1,30 @@
+{% extends 'loja/base.html' %}
+{% block content %}
+<h2>Todos os Produtos</h2>
+
+<form method="get">
+    Nome: <input type="text" name="nome">
+    Categoria:
+    <select name="categoria">
+        <option value="">Todas</option>
+        {% for cat in categorias %}
+            <option value="{{ cat.nome }}">{{ cat.nome }}</option>
+        {% endfor %}
+    </select>
+    Preço entre: <input type="number" step="0.01" name="preco_min"> e <input type="number" step="0.01" name="preco_max">
+    <button type="submit">Filtrar</button>
+</form>
+
+<ul>
+{% for produto in produtos %}
+    <li>
+        <a href="{% url 'info_produto' produto.id %}">
+            {{ produto.nome }} - R$ {{ produto.preco }}
+        </a>
+        <a href="{% url 'adicionar_ao_carrinho' produto.id %}">Adicionar ao carrinho</a>
+    </li>
+{% empty %}
+    <li>Nenhum produto encontrado.</li>
+{% endfor %}
+</ul>
+{% endblock %}

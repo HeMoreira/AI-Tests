@@ -1,0 +1,16 @@
+{% extends 'loja/base.html' %}
+{% block content %}
+<h2>Meus Pedidos</h2>
+<ul>
+    {% for pedido in pedidos %}
+    <li>
+        Pedido #{{ pedido.id }} - {{ pedido.status }} - R$ {{ pedido.total }} - {{ pedido.data_pedido|date:"d/m/Y H:i" }}
+        <ul>
+            {% for item in pedido.itens.all %}
+                <li>{{ item.produto.nome }} ({{ item.quantidade }}x)</li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

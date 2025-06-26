@@ -1,0 +1,14 @@
+{% extends 'loja/base.html' %}
+{% block content %}
+<h2>{{ produto.nome }}</h2>
+<p>{{ produto.descricao }}</p>
+
+{% if promocao %}
+  <p><del>Preço original: R$ {{ produto.preco }}</del></p>
+  <p><strong>Com desconto ({{ promocao.percentual_desconto }}%): R$ {{ preco_final }}</strong></p>
+{% else %}
+  <p>Preço: R$ {{ produto.preco }}</p>
+{% endif %}
+
+<a href="{% url 'adicionar_ao_carrinho' produto.id %}">Adicionar ao carrinho</a>
+{% endblock %}

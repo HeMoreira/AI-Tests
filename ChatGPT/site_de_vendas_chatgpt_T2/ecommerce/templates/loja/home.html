@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Página Inicial - Minha Loja{% endblock %}
+
+{% block content %}
+<h1>Destaques</h1>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for produto in destaques %}
+    <div class="col">
+        <div class="card h-100">
+            <!-- Aqui você pode adicionar imagem se quiser -->
+            <div class="card-body">
+                <h5 class="card-title">{{ produto.nome }}</h5>
+                <p class="card-text">{{ produto.descricao_curta }}</p>
+                <p class="card-text"><strong>R$ {{ produto.preco }}</strong></p>
+                <a href="{% url 'detalhes_produto' produto.id %}" class="btn btn-primary">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<h2 class="mt-5">Novidades</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for produto in novidades %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ produto.nome }}</h5>
+                <p class="card-text">{{ produto.descricao_curta }}</p>
+                <p class="card-text"><strong>R$ {{ produto.preco }}</strong></p>
+                <a href="{% url 'detalhes_produto' produto.id %}" class="btn btn-primary">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

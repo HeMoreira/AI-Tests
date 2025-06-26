@@ -1,0 +1,7 @@
+{% extends 'loja/base.html' %}
+{% block content %}
+<h2>Pedido Confirmado!</h2>
+<p>Pedido #{{ pedido.id }} realizado com sucesso.</p>
+<p>Total: R$ {{ pedido.total }}</p>
+<a href="{% url 'lista_produtos' %}">Continuar comprando</a>
+{% endblock %}

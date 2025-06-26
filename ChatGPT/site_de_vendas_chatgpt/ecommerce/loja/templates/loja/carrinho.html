@@ -1,0 +1,18 @@
+{% extends 'loja/base.html' %}
+{% block content %}
+<h2>Seu Carrinho</h2>
+<ul>
+  {% for item in carrinho.itens.all %}
+    <li>
+      {{ item.produto.nome }} - {{ item.quantidade }} x R$ {{ item.produto.preco }} = R$ {{ item.subtotal }}
+      <form method="post" action="{% url 'atualizar_quantidade' item.id %}">
+        {% csrf_token %}
+        <input type="number" name="quantidade" value="{{ item.quantidade }}">
+        <button type="submit">Atualizar</button>
+      </form>
+      <a href="{% url 'remover_do_carrinho' item.id %}">Remover</a>
+    </li>
+  {% endfor %}
+</ul>
+<p>Total: R$ {{ carrinho.total }}</p>
+{% endblock %}

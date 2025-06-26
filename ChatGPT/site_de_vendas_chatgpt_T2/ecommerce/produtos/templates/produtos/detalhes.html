@@ -1,0 +1,5 @@
+<h1>{{ produto.nome }}</h1>
+<p>{{ produto.descricao }}</p>
+<p>Preço: R$ {{ produto.preco }}</p>
+
+<a href="{% url 'adicionar_ao_carrinho' produto.id %}">Adicionar ao carrinho</a>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Minha Loja{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <a href="/"><img src="/static/logo.png" alt="Logo"></a>
+        <form method="get" action="{% url 'lista_produtos' %}">
+            <input type="text" name="search" placeholder="Buscar produtos">
+        </form>
+        <a href="{% url 'carrinho' %}">Carrinho</a>
+        {% if user.is_authenticated %}
+            <a href="/accounts/logout/">Sair</a>
+        {% else %}
+            <a href="/accounts/login/">Entrar</a>
+        {% endif %}
+    </header>
+
+    {% block content %}{% endblock %}
+</body>
+</html>
